@@ -6,38 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CheckSquare, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-// Demo users for testing
-const DEMO_USERS = {
-  owner: {
-    email: 'owner@demo.com',
-    password: 'demo1234',
-    user: {
-      id: '1',
-      first_name: 'John',
-      last_name: 'Owner',
-      email: 'owner@demo.com',
-      verified: true,
-      role: 'owner' as const,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-  },
-  member: {
-    email: 'member@demo.com',
-    password: 'demo1234',
-    user: {
-      id: '2',
-      first_name: 'Jane',
-      last_name: 'Member',
-      email: 'member@demo.com',
-      verified: true,
-      role: 'member' as const,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-  },
-};
+import { authApi } from '@/lib/api';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -52,42 +21,53 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call with demo users
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    console.log('=== LOGIN ATTEMPT ===');
+    console.log('Email:', email);
 
-    const demoUser = Object.values(DEMO_USERS).find(
-      (u) => u.email === email && u.password === password
-    );
+    try {
+      const response = await authApi.connexion({ email, password });
+      console.log('Login response:', response);
 
-    if (demoUser) {
-      login(
-        {
-          access_token: 'demo_token_' + Date.now(),
-          refresh_token: 'demo_refresh_' + Date.now(),
-          token_type: 'bearer',
-          expires_in: 1800,
-        },
-        demoUser.user
-      );
+      if (response.success && response.data) {
+        console.log('Login successful, fetching user info...');
+        // Récupérer les infos utilisateur après connexion avec le token
+        const userResponse = await authApi.moi(response.data.access_token);
+        console.log('User response:', userResponse);
+
+        if (userResponse.success && userResponse.data) {
+          console.log('User info retrieved:', userResponse.data);
+          login(response.data, userResponse.data);
+          toast({
+            title: 'Bienvenue !',
+            description: `Connecté en tant que ${userResponse.data.first_name}`,
+          });
+          navigate('/dashboard');
+        } else {
+          console.error('Failed to get user info:', userResponse);
+          toast({
+            title: 'Erreur',
+            description: userResponse.message || 'Impossible de récupérer les informations utilisateur',
+            variant: 'destructive',
+          });
+        }
+      } else {
+        console.error('Login failed:', response);
+        toast({
+          title: 'Échec de connexion',
+          description: response.message || 'Email ou mot de passe invalide',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
-        title: 'Welcome back!',
-        description: `Logged in as ${demoUser.user.first_name}`,
-      });
-      navigate('/dashboard');
-    } else {
-      toast({
-        title: 'Login failed',
-        description: 'Invalid email or password. Try demo accounts below.',
+        title: 'Erreur',
+        description: 'Une erreur est survenue lors de la connexion',
         variant: 'destructive',
       });
     }
 
     setIsLoading(false);
-  };
-
-  const handleDemoLogin = (type: 'owner' | 'member') => {
-    setEmail(DEMO_USERS[type].email);
-    setPassword(DEMO_USERS[type].password);
   };
 
   return (
@@ -146,31 +126,6 @@ export default function Login() {
             </Button>
           </form>
 
-          <div className="space-y-3">
-            <p className="text-xs text-center text-muted-foreground">
-              Demo accounts for testing:
-            </p>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="flex-1 text-xs"
-                onClick={() => handleDemoLogin('owner')}
-              >
-                Owner Demo
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="flex-1 text-xs"
-                onClick={() => handleDemoLogin('member')}
-              >
-                Member Demo
-              </Button>
-            </div>
-          </div>
 
           <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{' '}

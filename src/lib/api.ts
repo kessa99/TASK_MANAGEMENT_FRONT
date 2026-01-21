@@ -56,7 +56,10 @@ export const authApi = {
       body: JSON.stringify(payload),
     }),
 
-  moi: () => apiFetch<User>('/auth/me'),
+  moi: (accessToken?: string) =>
+    apiFetch<User>('/auth/me', accessToken ? {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    } : {}),
 
   deconnexion: () =>
     apiFetch<null>('/auth/logout', {
