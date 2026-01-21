@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Task, TaskStatus, CreateTaskPayload } from '@/types/api';
 import { KanbanBoard } from '@/components/KanbanBoard';
@@ -6,74 +6,24 @@ import { CreateTaskDialog } from '@/components/CreateTaskDialog';
 import { StatsCard } from '@/components/StatsCard';
 import { Button } from '@/components/ui/button';
 import { Plus, CheckCircle2, Clock, ListTodo, TrendingUp } from 'lucide-react';
-
-// Demo tasks for display
-const DEMO_TASKS: Task[] = [
-  {
-    id: '1',
-    title: 'Design new landing page',
-    description: 'Create a modern and responsive landing page design',
-    status: 'IN_PROGRESS',
-    priority: 'HIGH',
-    start_date: '2026-01-20T09:00:00',
-    due_date: '2026-01-25T18:00:00',
-    assigned_to: ['2'],
-    created_at: '2026-01-20T09:00:00',
-    updated_at: '2026-01-21T10:00:00',
-  },
-  {
-    id: '2',
-    title: 'Set up authentication flow',
-    description: 'Implement login, register, and password reset functionality',
-    status: 'DONE',
-    priority: 'HIGH',
-    start_date: '2026-01-18T09:00:00',
-    due_date: '2026-01-20T18:00:00',
-    assigned_to: [],
-    created_at: '2026-01-18T09:00:00',
-    updated_at: '2026-01-20T16:00:00',
-  },
-  {
-    id: '3',
-    title: 'Write API documentation',
-    description: 'Document all API endpoints with examples',
-    status: 'TODO',
-    priority: 'MEDIUM',
-    start_date: null,
-    due_date: '2026-01-28T18:00:00',
-    assigned_to: ['2'],
-    created_at: '2026-01-21T09:00:00',
-    updated_at: '2026-01-21T09:00:00',
-  },
-  {
-    id: '4',
-    title: 'Review pull requests',
-    description: 'Review and merge pending pull requests from the team',
-    status: 'TODO',
-    priority: 'LOW',
-    start_date: null,
-    due_date: null,
-    assigned_to: [],
-    created_at: '2026-01-21T11:00:00',
-    updated_at: '2026-01-21T11:00:00',
-  },
-  {
-    id: '5',
-    title: 'Database optimization',
-    description: 'Optimize slow queries and add proper indexes',
-    status: 'IN_PROGRESS',
-    priority: 'MEDIUM',
-    start_date: '2026-01-21T09:00:00',
-    due_date: '2026-01-24T18:00:00',
-    assigned_to: [],
-    created_at: '2026-01-21T08:00:00',
-    updated_at: '2026-01-21T14:00:00',
-  },
-];
+import { tachesApi } from '@/lib/api';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>(DEMO_TASKS);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      setIsLoading(true);
+      const response = await tachesApi.obtenirTout();
+      if (response.success && response.data) {
+        setTasks(response.data);
+      }
+      setIsLoading(false);
+    };
+    fetchTasks();
+  }, []);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [defaultStatus, setDefaultStatus] = useState<TaskStatus>('TODO');
 
@@ -127,7 +77,7 @@ export default function Dashboard() {
             Welcome back, {user?.first_name}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Here's what's happening with your tasks today.
+            Voici ce qui se passe aujourd'hui avec vos tâches.
           </p>
         </div>
         <Button onClick={() => setCreateDialogOpen(true)}>

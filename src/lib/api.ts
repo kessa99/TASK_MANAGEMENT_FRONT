@@ -1,4 +1,4 @@
-import { ApiResponse, AuthTokens, User, Task, CreateTaskPayload, UpdateTaskPayload, LoginPayload, RegisterPayload } from '@/types/api';
+import { ApiResponse, AuthTokens, User, Task, CreateTaskPayload, UpdateTaskPayload, LoginPayload, RegisterPayload, Invitation, CreateInvitationPayload } from '@/types/api';
 
 // URL de base de l'API
 const API_BASE_URL = '/api';
@@ -107,6 +107,27 @@ export const utilisateursApi = {
 
   verifier: (id: string) =>
     apiFetch<User>(`/users/${id}/verify`, {
+      method: 'POST',
+    }),
+};
+
+// API Invitations
+export const invitationsApi = {
+  obtenirTout: () => apiFetch<Invitation[]>('/invitations'),
+
+  creer: (payload: CreateInvitationPayload) =>
+    apiFetch<Invitation>('/invitations', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  supprimer: (id: string) =>
+    apiFetch<null>(`/invitations/${id}`, {
+      method: 'DELETE',
+    }),
+
+  renvoyer: (id: string) =>
+    apiFetch<Invitation>(`/invitations/${id}/resend`, {
       method: 'POST',
     }),
 };

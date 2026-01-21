@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User } from '@/types/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -11,44 +11,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
-// Demo team members
-const DEMO_MEMBERS: User[] = [
-  {
-    id: '2',
-    first_name: 'Jane',
-    last_name: 'Smith',
-    email: 'jane.smith@example.com',
-    verified: true,
-    role: 'member',
-    created_at: '2026-01-15T10:00:00',
-    updated_at: '2026-01-20T10:00:00',
-  },
-  {
-    id: '3',
-    first_name: 'Mike',
-    last_name: 'Johnson',
-    email: 'mike.johnson@example.com',
-    verified: true,
-    role: 'member',
-    created_at: '2026-01-18T10:00:00',
-    updated_at: '2026-01-21T10:00:00',
-  },
-  {
-    id: '4',
-    first_name: 'Sarah',
-    last_name: 'Wilson',
-    email: 'sarah.wilson@example.com',
-    verified: false,
-    role: 'member',
-    created_at: '2026-01-20T10:00:00',
-    updated_at: '2026-01-20T10:00:00',
-  },
-];
+import { utilisateursApi } from '@/lib/api';
 
 export default function Team() {
   const { user } = useAuth();
-  const [members] = useState<User[]>(DEMO_MEMBERS);
+  const [members, setMembers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      setIsLoading(true);
+      const response = await utilisateursApi.obtenirMembres();
+      if (response.success && response.data) {
+        // Filtrer pour exclure l'utilisateur courant (owner)
+        setMembers(response.data.filter(m => m.id !== user?.id));
+      }
+      setIsLoading(false);
+    };
+    fetchMembers();
+  }, [user?.id]);
   const isOwner = user?.role === 'owner';
 
   return (

@@ -41,7 +41,7 @@ export function AppSidebar({ collapsed = false, onToggle }: AppSidebarProps) {
             <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
               <CheckSquare className="w-4 h-4 text-accent-foreground" />
             </div>
-            <span className="font-semibold text-sidebar-primary">TaskFlow</span>
+            <span className="font-semibold text-sidebar-primary">Gestionnaire de taches</span>
           </div>
         )}
         <Button

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Invitation } from '@/types/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -6,36 +6,26 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Mail, Send, Clock, RefreshCw, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-
-// Demo invitations
-const DEMO_INVITATIONS: Invitation[] = [
-  {
-    id: '1',
-    email: 'alex.new@example.com',
-    task_id: '1',
-    task_title: 'Design new landing page',
-    invited_by: '1',
-    inviter_name: 'John Owner',
-    accepted: false,
-    expires_at: '2026-01-28T10:00:00',
-    created_at: '2026-01-21T10:00:00',
-  },
-  {
-    id: '2',
-    email: 'chris.dev@example.com',
-    task_id: '3',
-    task_title: 'Write API documentation',
-    invited_by: '1',
-    inviter_name: 'John Owner',
-    accepted: false,
-    expires_at: '2026-01-26T10:00:00',
-    created_at: '2026-01-19T10:00:00',
-  },
-];
+import { invitationsApi } from '@/lib/api';
 
 export default function Invitations() {
   const { user } = useAuth();
-  const [invitations] = useState<Invitation[]>(DEMO_INVITATIONS);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInvitations = async () => {
+      setIsLoading(true);
+      const response = await invitationsApi.obtenirTout();
+      if (response.success && response.data) {
+        setInvitations(response.data);
+      }
+      setIsLoading(false);
+    };
+    if (user?.role === 'owner') {
+      fetchInvitations();
+    }
+  }, [user?.role]);
   const isOwner = user?.role === 'owner';
 
   if (!isOwner) {
