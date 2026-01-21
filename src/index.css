@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 99%;
+    --foreground: 220 14% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 14% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 14% 10%;
+
+    --primary: 220 14% 10%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 13% 95%;
+    --secondary-foreground: 220 14% 10%;
+
+    --muted: 220 13% 95%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 230 80% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 230 80% 60%;
+
+    --radius: 0.5rem;
+
+    /* Task status colors */
+    --status-todo: 220 13% 95%;
+    --status-todo-foreground: 220 9% 46%;
+    --status-progress: 43 96% 56%;
+    --status-progress-foreground: 26 90% 20%;
+    --status-done: 142 71% 45%;
+    --status-done-foreground: 0 0% 100%;
+
+    /* Priority colors */
+    --priority-low: 142 71% 45%;
+    --priority-medium: 43 96% 56%;
+    --priority-high: 0 84% 60%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 220 9% 46%;
+    --sidebar-primary: 220 14% 10%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 13% 95%;
+    --sidebar-accent-foreground: 220 14% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 230 80% 60%;
+  }
+
+  .dark {
+    --background: 220 14% 6%;
+    --foreground: 220 13% 95%;
+
+    --card: 220 14% 8%;
+    --card-foreground: 220 13% 95%;
+
+    --popover: 220 14% 8%;
+    --popover-foreground: 220 13% 95%;
+
+    --primary: 0 0% 100%;
+    --primary-foreground: 220 14% 10%;
+
+    --secondary: 220 14% 14%;
+    --secondary-foreground: 220 13% 95%;
+
+    --muted: 220 14% 14%;
+    --muted-foreground: 220 9% 55%;
+
+    --accent: 230 80% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 16%;
+    --input: 220 14% 16%;
+    --ring: 230 80% 60%;
+
+    --status-todo: 220 14% 14%;
+    --status-todo-foreground: 220 9% 55%;
+    --status-progress: 43 96% 56%;
+    --status-progress-foreground: 26 90% 20%;
+    --status-done: 142 71% 45%;
+    --status-done-foreground: 0 0% 100%;
+
+    --sidebar-background: 220 14% 8%;
+    --sidebar-foreground: 220 9% 55%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 220 14% 10%;
+    --sidebar-accent: 220 14% 14%;
+    --sidebar-accent-foreground: 220 13% 95%;
+    --sidebar-border: 220 14% 16%;
+    --sidebar-ring: 230 80% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-background/80 backdrop-blur-xl;
+  }
+  
+  .task-card {
+    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
+}
